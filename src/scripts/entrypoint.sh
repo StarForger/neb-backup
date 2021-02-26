@@ -28,7 +28,9 @@ function entrypoint_run() {
   assert_file_exists "${script_dir}/${NEB_BACKUP_TYPE,,}.sh" "${NEB_BACKUP_TYPE} is not a valid backup type."
 
   # Source backup file
-  . "${script_dir}/${NEB_BACKUP_TYPE,,}.sh"  
+  . "${script_dir}/${NEB_BACKUP_TYPE,,}.sh" 
+
+  backup_dir="${backup_dir}/${NEB_BACKUP_TYPE,,}" 
 
   log info "init"
   ${NEB_BACKUP_TYPE,,}_run "init"

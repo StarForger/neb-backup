@@ -2,33 +2,47 @@
 
 function tar_run() {
   local -r backup_extension="tgz"
+
   _find_old_backups() {
-    find "${backup_dir}" -maxdepth 1 -name "*.${backup_extension}" -mtime "+${BACKUP_RETENTION_DAYS}" "${@}"
+    local retention=${NEB_BACKUP_RETENTION,,}
+    local t="${retention: -1}"
+    local scope="-mtime"
+
+    [[ "${t}" == "m" ]] && scope="-mmin"
+
+    case "${t}" in
+      [!0-9]) 
+        retention="${retention::-1}"
+      ;;
+      *) ;;
+    esac    
+
+    find "${backup_dir}" -maxdepth 1 -name "*.${backup_extension}" "${scope}" "+${retention}" "${@}"
   }
 
   function init() {
     mkdir -p "${backup_dir}"    
   }
-  function backup() {
-    local -r src_dir="${1}"
+  function backup() {    
     ts=$(date -u +"%Y%m%d-%H%M%S")
-    outFile="${backup_dir}/${BACKUP_NAME}-${ts}.${backup_extension}"
-    log info "Backing up content in ${src_dir} to ${outFile}"
+    outFile="${backup_dir}/${NEB_BACKUP_NAME}-${ts}.${backup_extension}"
+    log info "Backing up content in ${data_dir} to ${outFile}"
 
     # TODO move to array??
-    readarray -td, excludes_patterns < <(printf '%s' "${BACKUP_EXCLUDES}")
+    readarray -td, excludes_patterns < <(printf '%s' "${NEB_BACKUP_EXCLUDES}")
     excludes=()
     for pattern in "${excludes_patterns[@]}"; do
       excludes+=(--exclude "${pattern}")
     done
 
-    command tar "${excludes[@]}" -czf "${outFile}" -C "${src_dir}" .    
+    command tar "${excludes[@]}" -czf "${outFile}" -C "${data_dir}" .    
     # ln -sf "${BACKUP_NAME}-${ts}.${backup_extension}" "${backup_dir}/latest.${backup_extension}"    
   }
   function prune() {
     if [ -n "$(_find_old_backups -print -quit)" ]; then
-      log info "Pruning backup files older than ${BACKUP_RETENTION_DAYS} days"
-      _find_old_backups -print -delete | awk '{ printf "Removing %s\n", $0 }' | log INFO
+      # TODO improve message
+      log info "Pruning backup files within time: ${NEB_BACKUP_RETENTION}"
+      _find_old_backups -print -delete | awk '{ printf "Removing %s\n", $0 }' | log info
     fi
   }
 

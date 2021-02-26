@@ -23,9 +23,9 @@ function restic_run() {
   }
 
   function init() {    
-    if [ -z "${RESTIC_PASSWORD:-}" ] \
-        && [ -z "${RESTIC_PASSWORD_FILE:-}" ] \
-        && [ -z "${RESTIC_PASSWORD_COMMAND:-}" ]; then
+    if [[ -z "${RESTIC_PASSWORD:-}" ]] \
+        && [[ -z "${RESTIC_PASSWORD_FILE:-}" ]] \
+        && [[ -z "${RESTIC_PASSWORD_COMMAND:-}" ]]; then
       log error "At least one of" RESTIC_PASSWORD{,_FILE,_COMMAND} "needs to be set!"
       return 1
     fi

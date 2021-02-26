@@ -1,8 +1,8 @@
-FROM alpine as builder
+FROM alpine:3.12 as builder
 
 # Required Arguments for git downloads
 ARG NEB_BASH_VERSION=0.1.0
-ARG NEB_RCON_VERSION=0.1.2
+ARG NEB_RCON_VERSION=0.1.2  
 
 # Get Bash Commons
 RUN wget -O /tmp/neb-bash.tgz \
@@ -40,13 +40,14 @@ RUN apk --update-cache --no-cache upgrade; \
     coreutils \
     openssh-client \
     restic \
+    sudo \
   ; 
 
 # Default environment variables
 ENV NEB_BACKUP_TYPE="tar" \
-    # NEB_BACKUP_NAME="neb-backup" \ 
+    NEB_BACKUP_NAME="neb-backup" \ 
     # NEB_BACKUP_DIR="/srv/restic-repo" \
-    NEB_BACKUP_RETENTION_DAYS=7 \
+    NEB_BACKUP_RETENTION=7d \
     NEB_BACKUP_EXCLUDES=*.tmp,cache,logs \
     NEB_BACKUP_DELAY=2m \
     NEB_BACKUP_INTERVAL=12h

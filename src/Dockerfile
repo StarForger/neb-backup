@@ -46,16 +46,14 @@ RUN apk --update-cache --no-cache upgrade; \
 # Default environment variables
 ENV NEB_BACKUP_TYPE="tar" \
     NEB_BACKUP_NAME="neb-backup" \ 
-    # NEB_BACKUP_DIR="/srv/restic-repo" \
     NEB_BACKUP_RETENTION=7d \
     NEB_BACKUP_EXCLUDES=*.tmp,cache,logs \
     NEB_BACKUP_DELAY=2m \
-    NEB_BACKUP_INTERVAL=12h
-
-    # RESTIC_REPOSITORY
+    NEB_BACKUP_INTERVAL=12h \
+    RESTIC_REPOSITORY="/usr/local/backup"
     # RESTIC_PASSWORD
     # RESTIC_PASSWORD_FILE
-    # RESTIC_PASSWORD_COMMAND
+    # RESTIC_PASSWORD_COMMAND    
 
 # Copy requirements from builder
 COPY --from=builder /root-assets/. /root/

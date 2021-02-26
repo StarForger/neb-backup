@@ -7,10 +7,11 @@ services:
     container_name: "neb-backup"  
     restart: "always"
     environment:
-      NEB_BACKUP_TYPE: tar
+      NEB_BACKUP_TYPE: restic
       NEB_BACKUP_DELAY: 10s
       NEB_BACKUP_INTERVAL: 30s    
-      NEB_BACKUP_RETENTION: 1m  
+      NEB_BACKUP_RETENTION: 1h  
+      RESTIC_PASSWORD: test
     volumes:
       - "${PWD}/data:/usr/local/data"      
       - "${PWD}/backup:/usr/local/backup"

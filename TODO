@@ -4,3 +4,7 @@ TODO:
   ☐ Add Documentation
   ☐ Add rclone?
   ☐ Add tests
+
+NOTE:
+  tar is (h)our, (m)inute or day
+  restic is year, month, day, hour

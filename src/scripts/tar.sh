@@ -4,13 +4,16 @@ function tar_run() {
   local -r backup_extension="tgz"
 
   _find_old_backups() {
-    local retention=${NEB_BACKUP_RETENTION,,}
+    local retention=${NEB_BACKUP_RETENTION}
     local t="${retention: -1}"
     local scope="-mtime"
 
-    [[ "${t}" == "m" ]] && scope="-mmin"
-
     case "${t}" in
+      "m"|"h")
+        scope="-mmin"
+        retention="${retention::-1}" 
+        [[ "${t}" == "h" ]] && retention=$(( ${retention} * 60 ))      
+      ;;      
       [!0-9]) 
         retention="${retention::-1}"
       ;;

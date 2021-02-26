@@ -12,7 +12,7 @@ function restic_run() {
   fi
 
   function _delete_old_backups() {    
-    command restic forget --tag "${BACKUP_NAME}" --keep-within "${BACKUP_RETENTION_DAYS}d" "${@}"
+    command restic forget --tag "${NEB_BACKUP_NAME}" --keep-within "${NEB_BACKUP_RETENTION}" "${@}"
   }
   function _check() {
     if ! output="$(command restic check 2>&1)"; then
@@ -46,32 +46,31 @@ function restic_run() {
       return 1
     fi    
   }
-  function backup() {
-    local -r src_dir="${1}"
-    if [[ ! -d "${src_dir}" ]]; then
-      log error "${src_dir} does not exist"
+  function backup() {    
+    if [[ ! -d "${data_dir}" ]]; then
+      log error "${data_dir} does not exist"
       return 1
     fi    
 
-    readarray -td, excludes_patterns < <(printf '%s' "${BACKUP_EXCLUDES}")
+    readarray -td, excludes_patterns < <(printf '%s' "${NEB_BACKUP_EXCLUDES}")
 
     excludes=()
     for pattern in "${excludes_patterns[@]}"; do
       excludes+=(--exclude "${pattern}")
     done
 
-    log info "Backing up content in ${src_dir}"
-    command restic backup --tag "${BACKUP_NAME}" "${excludes[@]}" "${src_dir}" | log info
+    log info "Backing up content in ${data_dir}"
+    command restic backup --tag "${NEB_BACKUP_NAME}" "${excludes[@]}" "${data_dir}" | log info
   }
   function prune() {
-    if (( "${BACKUP_RETENTION_DAYS}" <= 0 )); then
-      log_info "backup pruning disabled, set BACKUP_RETENTION_DAYS to enable"
+    if [[ "${NEB_BACKUP_RETENTION}" == "0" ]]; then
+      log_info "backup pruning disabled, set NEB_BACKUP_RETENTION to enable"
       return
     fi
 
     # https://github.com/restic/restic/issues/1466
     if _delete_old_backups --dry-run | grep '^remove [[:digit:]]* snapshots:$' >/dev/null; then
-      log info "Forgetting snapshots older than ${BACKUP_RETENTION_DAYS} days"
+      log info "Forgetting snapshots older than ${NEB_BACKUP_RETENTION_DAYS}"
       _delete_old_backups --prune | log info
       _check | log info
     fi

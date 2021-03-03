@@ -20,15 +20,15 @@ function tar_run() {
       *) ;;
     esac    
 
-    find "${backup_dir}" -maxdepth 1 -name "*.${backup_extension}" "${scope}" "+${retention}" "${@}"
+    find "${backup_dir}/tar" -maxdepth 1 -name "*.${backup_extension}" "${scope}" "+${retention}" "${@}"
   }
 
   function init() {
-    mkdir -p "${backup_dir}"    
+    mkdir -p "${backup_dir}/tar"    
   }
   function backup() {    
     ts=$(date -u +"%Y%m%d-%H%M%S")
-    outFile="${backup_dir}/${NEB_BACKUP_NAME}-${ts}.${backup_extension}"
+    outFile="${backup_dir}/tar/${NEB_BACKUP_NAME}-${ts}.${backup_extension}"
     log info "Backing up content in ${data_dir} to ${outFile}"
 
     # TODO move to array??
@@ -39,7 +39,7 @@ function tar_run() {
     done
 
     command tar "${excludes[@]}" -czf "${outFile}" -C "${data_dir}" .    
-    # ln -sf "${BACKUP_NAME}-${ts}.${backup_extension}" "${backup_dir}/latest.${backup_extension}"    
+    # ln -sf "${BACKUP_NAME}-${ts}.${backup_extension}" "${backup_dir}/tar/latest.${backup_extension}"    
   }
   function prune() {
     if [ -n "$(_find_old_backups -print -quit)" ]; then

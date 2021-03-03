@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+function entrypoint_backup() {
+  rcon say Backup starting...
+  rcon save-off
+
+  trap 'rcon save-on' EXIT
+
+  rcon save-all
+
+  sync
+  
+  ${NEB_BACKUP_TYPE,,}_run "backup"
+  
+  rcon save-on
+
+  trap EXIT
+}
+
 function entrypoint_run() { 
   # Debugging
   if [[ "${NEB_DEBUG,,}" == "true" ]]; then
@@ -30,18 +47,16 @@ function entrypoint_run() {
   # Source backup file
   . "${script_dir}/${NEB_BACKUP_TYPE,,}.sh" 
 
-  backup_dir="${backup_dir}/${NEB_BACKUP_TYPE,,}" 
-
   log info "init"
   ${NEB_BACKUP_TYPE,,}_run "init"
   log info "delaying backup start..."
   sleep ${NEB_BACKUP_DELAY:-60}
   log info "backup start..."
 
+  rcon ping
+
   while true; do 
-    # TODO hook before backup
-    ${NEB_BACKUP_TYPE,,}_run "backup"
-    # TODO hook after backup
+    entrypoint_backup
 
     ${NEB_BACKUP_TYPE,,}_run "prune"
 

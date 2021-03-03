@@ -3,7 +3,7 @@
 # Requires restic: https://github.com/restic/restic
 # S3 repo also requires rclone: https://downloads.rclone.org
 
-: ${RESTIC_REPOSITORY:=${backup_dir}} #required by restic
+: ${RESTIC_REPOSITORY:="${backup_dir}/restic"} #required by restic
 
 function restic_run() {
   if ! command -v restic &> /dev/null; then
@@ -70,7 +70,7 @@ function restic_run() {
 
     # https://github.com/restic/restic/issues/1466
     if _delete_old_backups --dry-run | grep '^remove [[:digit:]]* snapshots:$' >/dev/null; then
-      log info "Forgetting snapshots older than ${NEB_BACKUP_RETENTION_DAYS}"
+      log info "Forgetting snapshots older than ${NEB_BACKUP_RETENTION}"
       _delete_old_backups --prune | log info
       _check | log info
     fi

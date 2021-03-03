@@ -5,13 +5,24 @@ services:
       context: src  
     hostname: "neb-backup"  
     container_name: "neb-backup"  
-    restart: "always"
+    # restart: "always"
+    networks:
+    - "minecraft"
     environment:
       NEB_BACKUP_TYPE: restic
+      NEB_BACKUP_NAME: "neb-backup"
       NEB_BACKUP_DELAY: 10s
       NEB_BACKUP_INTERVAL: 30s    
       NEB_BACKUP_RETENTION: 1h  
+      NEB_BACKUP_EXCLUDES: "*.jar,cache,logs,crash-reports"
+      RESTIC_REPOSITORY: "/usr/local/backup"
       RESTIC_PASSWORD: test
+      RCON_HOST: server
+      RCON_PASSWORD: testing
     volumes:
       - "${PWD}/data:/usr/local/data"      
       - "${PWD}/backup:/usr/local/backup"
+networks:
+  minecraft:
+    external:
+        name: neb-mc-server_internal

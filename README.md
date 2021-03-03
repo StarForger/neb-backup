@@ -105,6 +105,10 @@ neb-template
   |--test 
 ```
 
+- RESTIC_PASSWORD
+- RESTIC_PASSWORD_FILE
+- RESTIC_PASSWORD_COMMAND
+
 <!-- TODO update structure as needed -->
 
 <!-- ROADMAP -->

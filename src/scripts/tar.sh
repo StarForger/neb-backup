@@ -51,21 +51,3 @@ function tar_run() {
 
   function_call "${@}"
 }
-
-# init, backup, prune
-function backup_exec() {
-  case "${BACKUP_TYPE^^}" in
-    TAR)
-      backup_tar "${@}"
-    ;;
-    RESTIC)
-      if ! command -v restic &> /dev/null; then
-        log error "restic is not available"
-        return 1
-      fi
-      backup_restic "${@}"
-    ;;
-    *)
-      log error "backup type ${backup_type} does not exist"
-  esac
-}

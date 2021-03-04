@@ -3,6 +3,7 @@ services:
   server:
     build: 
       context: src  
+    image: ${AWS_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/neb-backup:minecraft
     hostname: "neb-backup"  
     container_name: "neb-backup"  
     # restart: "always"

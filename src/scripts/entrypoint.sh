@@ -1,22 +1,5 @@
 #!/usr/bin/env bash
 
-function entrypoint_backup() {
-  rcon say Backup starting...
-  rcon save-off
-
-  trap 'rcon save-on' EXIT
-
-  rcon save-all
-
-  sync
-  
-  ${NEB_BACKUP_TYPE,,}_run "backup"
-  
-  rcon save-on
-
-  trap EXIT
-}
-
 function entrypoint_run() { 
   # Debugging
   if [[ "${NEB_DEBUG,,}" == "true" ]]; then
@@ -28,6 +11,8 @@ function entrypoint_run() {
     echo "NEB_BACKUP_TYPE environment variable is required!"
     exit 1
   fi
+
+  local -r backup_type="${NEB_BACKUP_TYPE,,}"
 
   ## Directories
   local -r data_dir="/usr/local/data"           # mount point
@@ -42,13 +27,13 @@ function entrypoint_run() {
   . "${util_dir}/function.sh"
 
   # Assert backup file
-  assert_file_exists "${script_dir}/${NEB_BACKUP_TYPE,,}.sh" "${NEB_BACKUP_TYPE} is not a valid backup type."
+  assert_file_exists "${script_dir}/${backup_type}.sh" "${NEB_BACKUP_TYPE} is not a valid backup type."
 
   # Source backup file
-  . "${script_dir}/${NEB_BACKUP_TYPE,,}.sh" 
+  . "${script_dir}/${backup_type}.sh" 
 
   log info "init"
-  ${NEB_BACKUP_TYPE,,}_run "init"
+  ${backup_type}_run "init"
   log info "delaying backup start..."
   sleep ${NEB_BACKUP_DELAY:-60}
   log info "backup start..."
@@ -56,11 +41,26 @@ function entrypoint_run() {
   rcon ping
 
   while true; do 
-    entrypoint_backup
+    rcon say Backup starting...
+    rcon save-off
 
-    ${NEB_BACKUP_TYPE,,}_run "prune"
+    trap 'rcon save-on' EXIT
 
-    sleep ${NEB_BACKUP_INTERVAL}
+    rcon save-all
+
+    sync
+    
+    ${backup_type}_run "backup"
+    
+    rcon save-on
+
+    trap EXIT
+
+    rcon say Backup Done
+
+    ${backup_type}_run "prune"
+
+    sleep ${NEB_BACKUP_INTERVAL:-24h}
   done  
 }
 

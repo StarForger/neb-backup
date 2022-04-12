@@ -1,8 +1,8 @@
 FROM alpine:3.12 as builder
 
 # Required Arguments for git downloads
-ARG NEB_BASH_VERSION=0.1.0
-ARG NEB_RCON_VERSION=0.1.0  
+ARG NEB_BASH_VERSION=0.1.1
+ARG NEB_RCON_VERSION=1.0  
 
 # Get Bash Commons
 RUN wget -O /tmp/neb-bash.tgz \
@@ -55,8 +55,6 @@ ENV NEB_BACKUP_TYPE="tar" \
 COPY --from=builder /root-assets/. /root/
 COPY --from=builder /root-assets/. /etc/skel/
 COPY --from=builder /opt/builder/ /opt/
-
-# TODO improve RUNs
 
 # Add user
 RUN addgroup -g 9999 backer; \

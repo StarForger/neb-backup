@@ -4,6 +4,7 @@ TODO:
   ☐ Add Documentation
   ☐ Add rclone?
   ☐ Add tests
+  ☐ trigger backup via command
 
 NOTE:
   tar is (h)our, (m)inute or day

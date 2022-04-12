@@ -12,7 +12,7 @@ function restic_run() {
   fi
 
   function _delete_old_backups() {    
-    command restic forget --tag "${NEB_BACKUP_NAME}" --keep-within "${NEB_BACKUP_RETENTION}" "${@}"
+    command restic forget --tag "${NEB_BACKUP_NAME}" --keep-within "${NEB_BACKUP_RETENTION}" "${@}" --keep-last 10
   }
   function _check() {
     if ! output="$(command restic check 2>&1)"; then
@@ -29,6 +29,9 @@ function restic_run() {
       log error "At least one of" RESTIC_PASSWORD{,_FILE,_COMMAND} "needs to be set!"
       return 1
     fi
+
+    # unlock
+    command restic unlock
 
     if output="$(command restic snapshots 2>&1 >/dev/null)"; then
       log info "Repository already initialised"

@@ -18,7 +18,7 @@ services:
       NEB_BACKUP_EXCLUDES: "*.jar,cache,logs,crash-reports"
       RESTIC_REPOSITORY: "/usr/local/backup"
       RESTIC_PASSWORD: test
-      RCON_HOST: server
+      RCON_HOST: localhost
       RCON_PASSWORD: testing
     volumes:
       - "${PWD}/data:/usr/local/data"      
